@@ -23,7 +23,7 @@ async function request(messages: Message[], options: Record<string, unknown>, be
   try {
     response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-4o-mini', messages, ...options }),
+      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-6-luna', messages, ...options }),
       signal: AbortSignal.timeout(60000), cache: 'no-store',
     });
   } catch { throw new Error('The model request timed out or could not connect. Your saved task can be retried.'); }
@@ -41,7 +41,7 @@ async function requestAction(input: unknown[], tools: unknown[], beforeRequest: 
   try {
     response = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-4o-mini', input, tools, tool_choice: 'required', parallel_tool_calls: false }),
+      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-6-luna', input, tools, tool_choice: 'required', parallel_tool_calls: false }),
       signal: AbortSignal.timeout(60000), cache: 'no-store',
     });
   } catch { throw new Error('The model request timed out or could not connect. Your saved task can be retried.'); }

@@ -1,8 +1,11 @@
 import { runMetrics } from '@/lib/run';
 import type { RunStep, Session } from '@/lib/types';
 import { Localized } from './language';
+import { useLanguage } from './language';
+import { codeForError, errorMessage } from '@/lib/error-code';
 
 export function AgentRun({ session, running, serverStartedAt }: { session: Session; running: RunStep[] | null; serverStartedAt: number | null }) {
+  const { language } = useLanguage();
   const steps = running ?? session.run ?? [];
   const metrics = runMetrics(steps);
   const modelCalls = session.mode === 'live' ? (session.modelRequests ?? metrics.modelCalls) : metrics.modelCalls;
@@ -13,7 +16,7 @@ export function AgentRun({ session, running, serverStartedAt }: { session: Sessi
     <ol>{steps.map((entry, index) => <li key={entry.id} data-status={entry.status}>
       <strong>{String(index + 1).padStart(2, '0')} {entry.name}</strong>
       <span>{entry.type} · {entry.status} {entry.durationMs !== undefined ? `· ${entry.durationMs} ms` : ''} · v{entry.version}</span>
-      <p>{entry.result}</p>
+      <p>{entry.status === 'FAILED' ? errorMessage(codeForError(entry.result), language) : entry.result}</p>
     </li>)}</ol>
     {serverStartedAt !== null && <div className="run-pending" role="status"><strong>Server execution</strong><span>CONTROLLER · RUNNING</span><p>Waiting for this request’s observed execution steps. Started {new Date(serverStartedAt).toLocaleTimeString()}.</p></div>}
     <dl className="run-metrics"><div><dt>Total recorded runtime</dt><dd>{metrics.runtimeMs} ms</dd></div><div><dt>Model call count</dt><dd>{modelCalls}</dd></div><div><dt>Tool call count</dt><dd>{metrics.toolCalls}</dd></div><div><dt>Agent decision count</dt><dd>{metrics.decisions}</dd></div></dl>

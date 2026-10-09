@@ -4,6 +4,8 @@ import { addEvidence, confirm, createSession, editCriteria, interpret, prepare_r
 import { demoReasoner } from '../src/lib/demo-reasoner';
 import { conflictReview, createDemoSession, initialCriteria, defaultNeed, scenarios, subwayReviews } from '../src/lib/fixtures';
 import type { Session } from '../src/lib/types';
+import { commandSchema } from '../src/lib/schemas';
+import { errorMessage } from '../src/lib/error-code';
 
 async function setup(key: keyof typeof scenarios) {
   const s = createDemoSession(scenarios[key].reviews.join('\n\n')); s.need = defaultNeed;
@@ -13,6 +15,28 @@ async function run(s: Session) {
   for (let i = 0; i < 20 && !['waiting', 'complete', 'stopped'].includes(s.phase); i++) await step(s, demoReasoner);
   assert.ok(['waiting', 'complete', 'stopped'].includes(s.phase));
 }
+test('Chinese live criteria retain canonical priority and numeric constraint through API parsing and confirmation', () => {
+  const s = createSession('', 'live');
+  s.product = '登机箱'; s.need = '我想买一个适合短途旅行的轻便登机箱，预算200美元以内，最在意耐用和轮子顺滑。'; s.phase = 'ready';
+  const criteria = [
+    { id: 'budget', label: '预算', context: '总价不超过200美元。', priority: 'Hard constraint' as const, minutes: null, requiredEnvironment: null, constraint: { operator: 'lte' as const, value: 200, unit: 'USD' } },
+    { id: 'durability', label: '耐用性', context: '最在意箱体和整体结构耐用。', priority: 'Critical' as const, minutes: null, requiredEnvironment: null, constraint: null },
+    { id: 'wheel_smoothness', label: '轮子顺滑度', context: '最在意轮子滚动顺滑。', priority: 'Critical' as const, minutes: null, requiredEnvironment: null, constraint: null },
+    { id: 'lightweight', label: '轻便性', context: '希望箱子轻便，适合短途旅行。', priority: 'Medium' as const, minutes: null, requiredEnvironment: null, constraint: null },
+  ];
+  const command = commandSchema.parse(JSON.parse(JSON.stringify({ action: 'confirm', criteria })));
+  assert.equal(command.action, 'confirm');
+  if (command.action !== 'confirm') throw new Error('Unexpected command');
+  assert.deepEqual(command.criteria, criteria);
+  confirm(s, command.criteria);
+  assert.equal(s.confirmed, true); assert.equal(s.phase, 'preparing');
+  assert.deepEqual(s.criteria.map(c => c.priority), ['Hard constraint', 'Critical', 'Critical', 'Medium']);
+  assert.equal(s.criteria[0].constraint?.value, 200);
+  const invalid = structuredClone(s); invalid.phase = 'ready'; invalid.confirmed = false;
+  assert.throws(() => confirm(invalid, criteria.map(c => c.id === 'durability' ? { ...c, priority: 'Hard constraint' as const } : c)), { code: 'INVALID_CRITERIA' });
+  assert.match(errorMessage('INVALID_CRITERIA', 'zh'), /硬性条件/);
+  assert.match(errorMessage('INVALID_CRITERIA', 'en'), /hard constraint/);
+});
 test('vague need: one clarification and a blocking confirmation gate', async () => {
   const s = createDemoSession(scenarios.sufficient.reviews.join('\n\n')); s.need = 'Good comfortable headphones';
   await interpret(s, demoReasoner); assert.equal(s.phase, 'clarify');

@@ -14,7 +14,7 @@ The model interprets meaning and proposes actions. The deterministic controller 
 
 The repaired generic flow was tested with new carry-on suitcase, office chair, and air fryer needs, including an unknown product clarified once. Headphone conflict/request/skip/add workflows remained 3/3 under the previously validated `gpt-6.1-sol` integration. Exact quote checks and category separation were exercised. These tests cover specific synthetic cases, not universal product accuracy or review authenticity. See `CORE_FLOW_AUDIT.md` for the repaired behavior and `VERIFICATION.md` for historical results.
 
-For this delivery, `gpt-6-luna` passed one English generic interpretation, one Chinese generic interpretation, and a complete office-chair evidence → `FINALIZE` → brief flow with valid citations. Two luggage attempts correctly stopped at `REQUEST_EVIDENCE` because supplied price or durability evidence did not pass the existing critical coverage rules. No controller or sufficiency threshold was loosened. Historical `gpt-6.1-sol` validation remains recorded.
+Historical pre-release validation: `gpt-6-luna` passed English and Chinese generic interpretation and a complete office-chair evidence → `FINALIZE` → brief flow with valid citations. Two luggage attempts stopped at `REQUEST_EVIDENCE` because supplied price or durability evidence did not pass the existing critical coverage rules. No controller or sufficiency threshold was loosened. Historical `gpt-6.1-sol` validation remains recorded separately.
 
 ## Running and deployment
 
@@ -29,11 +29,13 @@ npm run typecheck
 npm run build
 ```
 
-`OPENAI_MODEL=gpt-6-luna` is the current public model choice. Set `BUYLENS_LIVE_ENABLED=true` explicitly to allow live sessions; any other value disables them. `MAX_LIVE_MODEL_CALLS_PER_SESSION=6` limits model request attempts per persisted guest session, with each request reserved before contacting OpenAI. A visitor can start a fresh session, so this is a per-session control rather than a global spend ceiling. The `Load demo` path stays available without model calls. `NEXT_PUBLIC_DEFAULT_LOCALE=en` or `zh` sets the first-visit language; saved user choice takes precedence.
+Current production uses `OPENAI_MODEL=gpt-6-luna` and `BUYLENS_LIVE_ENABLED=true`. `MAX_LIVE_MODEL_CALLS_PER_SESSION=8` limits model request attempts per persisted guest session, with each request reserved before contacting OpenAI. A visitor can start a fresh session, so this is a per-session control rather than a global spend ceiling. The `Load demo` path stays available without model calls. `NEXT_PUBLIC_DEFAULT_LOCALE=en` or `zh` sets the first-visit language; saved user choice takes precedence. Confirmation keeps strict controller validation; user-facing failures use stable error codes and localized messages.
 
 Only `NEXT_PUBLIC_DEFAULT_LOCALE` is public. Keep `OPENAI_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` server-only. `.env.local`, dependencies, build output, archives, and test screenshots are excluded from Git. `npm run test:e2e` runs the free demo and language checks; paid live suites remain separate.
 
 ## Public sites
 
-- English Vercel: deployment pending live release.
-- Chinese Render: deployment pending.
+- English Vercel: https://buylens-agent.vercel.app/
+- Chinese Render: https://buylens-cn.onrender.com/
+
+Both public sites run live model analysis and save guest sessions to Supabase. The English site defaults to English; the Chinese site defaults to Chinese. The same application commit is deployed to each, with locale selected by environment variable. Production release smoke results are recorded in the current release report; older validation files remain historical.

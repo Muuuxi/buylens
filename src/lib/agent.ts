@@ -1,5 +1,6 @@
 import type { Action, Assessment, Brief, Conflict, Criterion, Evidence, Reasoner, Session } from './types';
 import { GuardRejection, human, reasoningName, reasoningType, track, trackSync } from './run';
+import { UserFacingError } from './error-code';
 
 export function createSession(reviewText = '', mode: Session['mode'] = 'live'): Session {
   return { snapshotVersion: 2, productProvided: false, id: crypto.randomUUID(), mode, phase: 'criteria', product: '', need: '', reviewText, criteria: [], confirmed: false, question: null, reviews: [], evidence: [], conflicts: [], assessments: [], log: [], run: [], version: 1, clarifications: 0, requests: 0, iterations: 0, modelRequests: 0, decision: null, brief: null, error: null, pendingTool: null };
@@ -153,7 +154,7 @@ export async function interpret(s: Session, r: Reasoner) {
   log(s, 'user_action', 'Buying needs interpreted', s.question ?? 'Review and confirm your criteria.');
 }
 export function confirm(s: Session, criteria: Criterion[]) {
-  if (!['ready', 'clarify'].includes(s.phase) || !s.product.trim() || criteria.length < 1 || criteria.length > 8 || !criteria.some(c => ['Critical', 'Hard constraint'].includes(c.priority)) || new Set(criteria.map(c => c.id)).size !== criteria.length || criteria.some(c => !/^[a-z][a-z0-9_]*$/.test(c.id) || !c.context.trim() || c.context.length > 500 || (c.priority === 'Hard constraint' && !c.constraint) || (c.constraint && (!Number.isFinite(c.constraint.value) || c.constraint.value < 0 || !c.constraint.unit.trim())) || (c.minutes !== null && (!Number.isInteger(c.minutes) || c.minutes < 1 || c.minutes > 10080)))) throw new Error('Review the criteria and product context; keep a critical criterion or explicit hard constraint.');
+  if (!['ready', 'clarify'].includes(s.phase) || !s.product.trim() || criteria.length < 1 || criteria.length > 8 || !criteria.some(c => ['Critical', 'Hard constraint'].includes(c.priority)) || new Set(criteria.map(c => c.id)).size !== criteria.length || criteria.some(c => !/^[a-z][a-z0-9_]*$/.test(c.id) || !c.context.trim() || c.context.length > 500 || (c.priority === 'Hard constraint' && !c.constraint) || (c.constraint && (!Number.isFinite(c.constraint.value) || c.constraint.value < 0 || !c.constraint.unit.trim())) || (c.minutes !== null && (!Number.isInteger(c.minutes) || c.minutes < 1 || c.minutes > 10080)))) throw new UserFacingError('INVALID_CRITERIA', 'Review the criteria and product context; keep a critical criterion or explicit hard constraint.');
   s.criteria = criteria; s.confirmed = true; s.question = null; s.phase = 'preparing';
   log(s, 'user_action', 'Criteria confirmed', criteria.map(c => `${c.label}: ${c.priority}`).join('; '));
   human(s, 'Confirm criteria', `${criteria.length} buying criteria confirmed`);

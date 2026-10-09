@@ -8,6 +8,7 @@ import { insertSession, loadSession, saveSession } from '@/server/persistence';
 import type { Session } from '@/lib/types';
 import { human } from '@/lib/run';
 import { publicDemoOnly } from '@/server/demo-policy';
+import { codeForError } from '@/lib/error-code';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -15,8 +16,8 @@ const COOKIE = 'buylens_guest';
 const headers = { 'Cache-Control': 'no-store' };
 const LIVE_LIMIT_MESSAGE = 'This public demo has reached its live AI limit. Start a new demo later or view the prepared example.';
 function modelLimit() {
-  const parsed = Number(process.env.MAX_LIVE_MODEL_CALLS_PER_SESSION ?? '6');
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : 6;
+  const parsed = Number(process.env.MAX_LIVE_MODEL_CALLS_PER_SESSION ?? '8');
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 8;
 }
 function sameOrigin(request: Request) {
   try {
@@ -35,23 +36,23 @@ export async function GET() {
   if (publicDemoOnly()) return Response.json({ session: null }, { headers });
   if (!(await cookies()).has(COOKIE)) return Response.json({ session: null }, { headers });
   try { const { session } = await current(); return Response.json({ session }, { headers }); }
-  catch (e) { return Response.json({ error: e instanceof Error ? e.message : 'Unable to restore this task.' }, { status: 503, headers }); }
+  catch (e) { return Response.json({ code: codeForError(e), error: e instanceof Error ? e.message : 'Unable to restore this task.' }, { status: 503, headers }); }
 }
 export async function DELETE(request: Request) {
-  if (publicDemoOnly()) return Response.json({ error: 'Live sessions are disabled in the public portfolio demo.' }, { status: 403, headers });
-  if (!sameOrigin(request)) return Response.json({ error: 'Same-origin request required.' }, { status: 403 });
+  if (publicDemoOnly()) return Response.json({ code: 'LIVE_UNAVAILABLE', error: 'Live sessions are disabled in the public portfolio demo.' }, { status: 403, headers });
+  if (!sameOrigin(request)) return Response.json({ code: 'INVALID_REQUEST', error: 'Same-origin request required.' }, { status: 403 });
   (await cookies()).delete(COOKIE);
   return Response.json({ ok: true }, { headers });
 }
 export async function POST(request: Request) {
-  if (publicDemoOnly()) return Response.json({ error: 'Live sessions are disabled in the public portfolio demo.' }, { status: 403, headers });
-  if (!sameOrigin(request)) return Response.json({ error: 'Same-origin request required.' }, { status: 403 });
+  if (publicDemoOnly()) return Response.json({ code: 'LIVE_UNAVAILABLE', error: 'Live sessions are disabled in the public portfolio demo.' }, { status: 403, headers });
+  if (!sameOrigin(request)) return Response.json({ code: 'INVALID_REQUEST', error: 'Same-origin request required.' }, { status: 403 });
   const text = await request.text();
-  if (text.length > 30000) return Response.json({ error: 'Request is too large.' }, { status: 413 });
+  if (text.length > 30000) return Response.json({ code: 'INVALID_REQUEST', error: 'Request is too large.' }, { status: 413 });
   let raw: unknown;
-  try { raw = JSON.parse(text); } catch { return Response.json({ error: 'Invalid request JSON.' }, { status: 400 }); }
+  try { raw = JSON.parse(text); } catch { return Response.json({ code: 'INVALID_REQUEST', error: 'Invalid request JSON.' }, { status: 400 }); }
   const parsed = commandSchema.safeParse(raw);
-  if (!parsed.success) return Response.json({ error: 'The input does not match the expected action or field limits.' }, { status: 400 });
+  if (!parsed.success) return Response.json({ code: 'INVALID_REQUEST', error: 'The input does not match the expected action or field limits.' }, { status: 400 });
   const command = parsed.data;
   let s: Session | null = null;
   let updatedAt: string | null = null;
@@ -100,9 +101,9 @@ export async function POST(request: Request) {
       if (before) s = { ...before, log: failedLog, run: failedRun, iterations: Math.max(before.iterations, s.iterations), modelRequests: Math.max(before.modelRequests ?? 0, s.modelRequests ?? 0) };
       s.error = error;
       // Preserve failed tool/action logs and the resumable phase; never claim success.
-      try { await saveSession(s, updatedAt); } catch { return Response.json({ error: `${error} Reload to restore the last saved task.` }, { status: 503, headers }); }
-      return Response.json({ error, session: s }, { status: 422, headers });
+      try { await saveSession(s, updatedAt); } catch { return Response.json({ code: 'PERSISTENCE', error: `${error} Reload to restore the last saved task.` }, { status: 503, headers }); }
+      return Response.json({ code: codeForError(e), error, session: s }, { status: 422, headers });
     }
-    return Response.json({ error }, { status: 503, headers });
+    return Response.json({ code: codeForError(e), error }, { status: 503, headers });
   }
 }

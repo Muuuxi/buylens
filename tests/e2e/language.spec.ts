@@ -89,3 +89,18 @@ test('Chinese evidence addition retains decision history across a language switc
   await expect(page.getByText('已完成，仍有适用限制', { exact: true })).toBeVisible();
   await page.screenshot({ path: 'artifacts/screenshots/bilingual-brief.png', fullPage: true });
 });
+
+test('Chinese priority labels keep canonical option values and invalid criteria get a Chinese error', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('buylens-language', 'zh'));
+  await page.goto('/');
+  await page.getByRole('button', { name: '加载演示', exact: true }).click();
+  await page.getByRole('button', { name: '解读我的需求' }).click();
+  const select = page.locator('.criterion-edit select').first();
+  expect(await select.locator('option').evaluateAll(options => options.map(option => ({ value: (option as HTMLOptionElement).value, disabled: (option as HTMLOptionElement).disabled })))).toEqual([
+    { value: 'Critical', disabled: false }, { value: 'Medium', disabled: false }, { value: 'Low', disabled: false }, { value: 'Hard constraint', disabled: true },
+  ]);
+  await page.locator('.criterion-edit input').first().fill('');
+  await page.getByRole('button', { name: '确认并分析评论' }).click();
+  await expect(page.locator('.error[role="alert"]')).toContainText('请检查购买标准');
+  await expect(page.locator('.error[role="alert"]')).not.toContainText('Review the criteria');
+});

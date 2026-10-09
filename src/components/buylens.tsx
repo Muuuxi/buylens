@@ -9,6 +9,7 @@ import { markdownBrief } from '@/lib/markdown';
 import { AgentRun } from './agent-run';
 import { LanguageSwitch, Localized, useLanguage } from './language';
 import { localizedMarkdown } from '@/lib/i18n';
+import { codeForError, errorMessage } from '@/lib/error-code';
 import type { Criterion, Evidence, RunStep, Session } from '@/lib/types';
 
 const STORAGE = 'buylens-normal-v2';
@@ -66,7 +67,7 @@ export default function BuyLens() {
         const response = await fetch('/api/session');
         const data = await response.json();
         if (intent.current !== initialIntent) return;
-        if (!response.ok) { setError(data.error ?? 'Could not restore the cloud session.'); return; }
+        if (!response.ok) { setError(data.code ?? 'PERSISTENCE'); return; }
         if (data.session?.snapshotVersion === 2 && data.session.mode === 'live') { setServerSession(true); setSession(data.session); }
         else if (data.session) pendingReset.current = fetch('/api/session', { method: 'DELETE' });
       }
@@ -87,19 +88,19 @@ export default function BuyLens() {
     setBusy(true); setError('');
     try {
       if (s.mode === 'live') {
-        if (!config.live || !config.persistence) throw new Error('Live interpretation is unavailable here. Configure the private local integration or explicitly load the demo.');
+        if (!config.live || !config.persistence) throw new Error('LIVE_UNAVAILABLE');
         if (!serverSession) {
-          if (action !== 'interpret') throw new Error('Interpret your purchase need before confirming criteria.');
+          if (action !== 'interpret') throw new Error('INVALID_REQUEST');
           await pendingReset.current; pendingReset.current = null;
           const created = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', mode: 'live', product: s.product, need: s.need, reviewText: s.reviewText }) });
           const data = await created.json();
-          if (!created.ok) throw new Error(data.error ?? 'Unable to create the live task.');
+          if (!created.ok) throw new Error(data.code ?? 'ANALYSIS_FAILED');
           setServerSession(true); commit(data.session);
         }
         setServerStartedAt(Date.now());
         const response = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...payload }) });
         const data = await response.json();
-        if (!response.ok) { if (data.session) commit(data.session); throw new Error(data.error ?? 'The request failed.'); }
+        if (!response.ok) { if (data.session) commit(data.session); throw new Error(data.code ?? 'ANALYSIS_FAILED'); }
         commit(data.session);
       } else {
         const next = structuredClone(s);
@@ -116,7 +117,7 @@ export default function BuyLens() {
         } finally { unobserve(); }
       }
       return true;
-    } catch (e) { setError(e instanceof Error ? e.message : 'Something went wrong. Retry this step.'); }
+    } catch (e) { setError(codeForError(e)); }
     finally { setBusy(false); setRunning(null); setServerStartedAt(null); }
     return false;
   }
@@ -177,7 +178,7 @@ export default function BuyLens() {
     <main className="shell">
       <nav className="steps" aria-label="Purchase decision steps">{(['criteria', 'workspace', 'brief'] as Screen[]).map((item, i) => <button key={item} aria-label={`${i + 1} ${['Your criteria', 'Evidence workspace', 'Decision brief'][i]}`} className={(i === 0 && s.confirmed) || (i === 1 && s.brief) ? 'step-complete' : undefined} aria-current={screen === item ? 'step' : undefined} disabled={busy || (item === 'workspace' && !s.confirmed) || (item === 'brief' && !s.brief)} onClick={() => setScreen(item)}><span>{i + 1}</span>{['Criteria', 'Evidence', 'Decision'][i]}</button>)}</nav>
 
-      {error && <div className="error" role="alert">{error} <button onClick={() => setError('')}>Retry</button></div>}
+      {error && <div className="error" role="alert">{errorMessage(error, language)} <button onClick={() => setError('')}>Retry</button></div>}
       {screen === 'criteria' && <>
         <div className="page-title"><div><h1>What matters to you?</h1><p>Start with your needs. We’ll look for evidence that actually answers them.</p></div><span className="subtle">One product. Your priorities.</span></div>
         <div className="criteria-layout">
@@ -185,7 +186,7 @@ export default function BuyLens() {
           <section className="surface criteria-form"><div className="need-composer"><label className="field-label" htmlFor="need">Tell us how you’ll use it</label><textarea id="need" rows={4} value={s.need} disabled={s.confirmed || busy} onChange={e => updateInput('need', e.target.value)} placeholder="Tell BuyLens what matters to you…"/>{!s.criteria.length && <div className="composer-action"><span className="small">Your needs become criteria you can review.</span><button className="primary" disabled={busy} onClick={() => void command('interpret')}>{busy ? 'Interpreting…' : 'Interpret my needs'}</button></div>}</div><div className="product-field"><label className="field-label" htmlFor="product">The product you’re considering</label><input id="product" placeholder="Optional: product name or category" value={s.product} disabled={s.confirmed || busy} onChange={e => updateInput('product', e.target.value)}/></div>
             <details className="review-input"><summary>Review input · {s.reviewText.split(/\n\s*\n/).filter(Boolean).length} reviews</summary><label className="field-label" htmlFor="reviews">One review per paragraph. Optional [rating=5] prefix.</label><textarea id="reviews" rows={7} value={s.reviewText} disabled={s.confirmed || busy} onChange={e => updateInput('reviewText', e.target.value)}/></details>
             {s.phase === 'clarify' && <div className="clarification"><h3>One quick clarification</h3><p>{s.question}</p><label className="sr-only" htmlFor="clarify">Clarification answer</label><input id="clarify" value={answer} onChange={e => setAnswer(e.target.value)} placeholder="e.g. Subway and library, two hours at a time"/><button className="secondary" disabled={busy || !answer.trim()} onClick={() => void command('clarify', { answer })}>Update criteria</button><button className="text-button" disabled={busy} onClick={() => void command('clarify', { answer: 'Use editable proposed criteria; I will confirm the details.' })}>Use proposed criteria</button></div>}
-            {s.criteria.length > 0 && s.phase !== 'clarify' && <div className="criteria-editor"><div className="section-heading"><h2>Your buying criteria</h2><span className="pill neutral">{s.mode === 'demo' ? 'You confirm. Then we analyze.' : 'Generated by AI from your need. Confirm or edit.'}</span></div>{s.criteria.map((c, i) => <div className="criterion-edit" key={c.id}><div><label htmlFor={`criterion-${c.id}`}>{c.label}</label><input id={`criterion-${c.id}`} aria-label={`${c.label} context`} value={c.context} disabled={s.confirmed || busy || !!c.constraint} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, context: e.target.value }; commit({ ...s, criteria: cs }); }}/>{c.minutes !== null && <label className="duration">{s.mode === 'demo' ? 'Study session' : 'Use session'} <input type="number" min={s.mode === 'demo' ? 15 : 1} max={s.mode === 'demo' ? 480 : 10080} aria-label={s.mode === 'demo' ? 'Study session minutes' : 'Use session minutes'} value={c.minutes} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, minutes: Number(e.target.value) }; commit({ ...s, criteria: cs }); }}/> min</label>}{c.constraint && <label className="duration">{c.constraint.operator === 'lte' ? 'Maximum' : c.constraint.operator === 'gte' ? 'Minimum' : 'Required value'} <input type="number" min={0} step="any" aria-label={`${c.label} constraint value`} value={c.constraint.value} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = editConstraintValue(c, Number(e.target.value)); commit({ ...s, criteria: cs }); }}/>{c.constraint.unit}</label>}</div><select aria-label={`${c.label} priority`} value={c.priority} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, priority: e.target.value as Criterion['priority'] }; commit({ ...s, criteria: cs }); }}><option>Critical</option><option>Medium</option><option>Low</option><option>Hard constraint</option></select></div>)}<p className="small">Only stated constraints are used. Review the generated criteria before confirming.</p><div className="button-row">{!s.confirmed ? <button className="primary" disabled={busy} onClick={async () => { if (await command('confirm', { criteria: s.criteria })) setScreen('workspace'); }}>Confirm & analyze reviews</button> : <><button className="primary" onClick={() => setScreen('workspace')}>Continue to evidence</button><button className="secondary" disabled={busy} onClick={() => void command('edit')}>Edit criteria</button></>}</div></div>}
+            {s.criteria.length > 0 && s.phase !== 'clarify' && <div className="criteria-editor"><div className="section-heading"><h2>Your buying criteria</h2><span className="pill neutral">{s.mode === 'demo' ? 'You confirm. Then we analyze.' : 'Generated by AI from your need. Confirm or edit.'}</span></div>{s.criteria.map((c, i) => <div className="criterion-edit" key={c.id}><div><label htmlFor={`criterion-${c.id}`}>{c.label}</label><input id={`criterion-${c.id}`} aria-label={`${c.label} context`} value={c.context} disabled={s.confirmed || busy || !!c.constraint} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, context: e.target.value }; commit({ ...s, criteria: cs }); }}/>{c.minutes !== null && <label className="duration">{s.mode === 'demo' ? 'Study session' : 'Use session'} <input type="number" min={s.mode === 'demo' ? 15 : 1} max={s.mode === 'demo' ? 480 : 10080} aria-label={s.mode === 'demo' ? 'Study session minutes' : 'Use session minutes'} value={c.minutes} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, minutes: Number(e.target.value) }; commit({ ...s, criteria: cs }); }}/> min</label>}{c.constraint && <label className="duration">{c.constraint.operator === 'lte' ? 'Maximum' : c.constraint.operator === 'gte' ? 'Minimum' : 'Required value'} <input type="number" min={0} step="any" aria-label={`${c.label} constraint value`} value={c.constraint.value} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = editConstraintValue(c, Number(e.target.value)); commit({ ...s, criteria: cs }); }}/>{c.constraint.unit}</label>}</div><select aria-label={`${c.label} priority`} value={c.priority} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, priority: e.target.value as Criterion['priority'] }; commit({ ...s, criteria: cs }); }}><option value="Critical">Critical</option><option value="Medium">Medium</option><option value="Low">Low</option><option value="Hard constraint" disabled={!c.constraint}>Hard constraint</option></select></div>)}<p className="small">Only stated constraints are used. Review the generated criteria before confirming.</p><div className="button-row">{!s.confirmed ? <button className="primary" disabled={busy} onClick={async () => { if (await command('confirm', { criteria: s.criteria })) setScreen('workspace'); }}>Confirm & analyze reviews</button> : <><button className="primary" onClick={() => setScreen('workspace')}>Continue to evidence</button><button className="secondary" disabled={busy} onClick={() => void command('edit')}>Edit criteria</button></>}</div></div>}
           </section>
         </div>
         <div className="integration-note"><span>{s.mode === 'demo' ? 'Explicit synthetic headphone demo; no model calls.' : config.live && config.persistence ? 'Your need is interpreted by the live model; the session is saved with Supabase.' : 'Live interpretation is unavailable here. Configure the private local integration or explicitly load the demo.'}</span></div>

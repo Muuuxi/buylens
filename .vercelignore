@@ -1,0 +1,15 @@
+.env*
+.git/
+node_modules/
+.next/
+.vercel/
+test-results/
+playwright-report/
+artifacts/screenshots/
+artifacts/*
+!artifacts/evaluation-results.json
+*.tsbuildinfo
+*.zip
+*.log
+.grill/
+references/

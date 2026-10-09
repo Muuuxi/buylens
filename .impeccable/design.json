@@ -1,0 +1,472 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-03T06:11:43.605Z",
+  "title": "Design System: BuyLens",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "tonalRamp": [
+          "oklch(15.00% 0.00411 91.45)",
+          "oklch(26.43% 0.00411 91.45)",
+          "oklch(37.86% 0.00411 91.45)",
+          "oklch(49.29% 0.00411 91.45)",
+          "oklch(60.71% 0.00411 91.45)",
+          "oklch(72.14% 0.00411 91.45)",
+          "oklch(83.57% 0.00411 91.45)",
+          "oklch(95.00% 0.00411 91.45)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Reading White",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 0.00)",
+          "oklch(26.43% 0.00000 0.00)",
+          "oklch(37.86% 0.00000 0.00)",
+          "oklch(49.29% 0.00000 0.00)",
+          "oklch(60.71% 0.00000 0.00)",
+          "oklch(72.14% 0.00000 0.00)",
+          "oklch(83.57% 0.00000 0.00)",
+          "oklch(95.00% 0.00000 0.00)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Charcoal",
+        "tonalRamp": [
+          "oklch(15.00% 0.01442 261.67)",
+          "oklch(26.43% 0.01442 261.67)",
+          "oklch(37.86% 0.01442 261.67)",
+          "oklch(49.29% 0.01442 261.67)",
+          "oklch(60.71% 0.01442 261.67)",
+          "oklch(72.14% 0.01442 261.67)",
+          "oklch(83.57% 0.01442 261.67)",
+          "oklch(95.00% 0.01442 261.67)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Quiet Slate",
+        "tonalRamp": [
+          "oklch(15.00% 0.02133 258.37)",
+          "oklch(26.43% 0.02133 258.37)",
+          "oklch(37.86% 0.02133 258.37)",
+          "oklch(49.29% 0.02133 258.37)",
+          "oklch(60.71% 0.02133 258.37)",
+          "oklch(72.14% 0.02133 258.37)",
+          "oklch(83.57% 0.02133 258.37)",
+          "oklch(95.00% 0.02133 258.37)"
+        ]
+      },
+      "blue": {
+        "role": "primary",
+        "displayName": "Companion Cobalt",
+        "tonalRamp": [
+          "oklch(15.00% 0.22359 267.05)",
+          "oklch(26.43% 0.22359 267.05)",
+          "oklch(37.86% 0.22359 267.05)",
+          "oklch(49.29% 0.22359 267.05)",
+          "oklch(60.71% 0.22359 267.05)",
+          "oklch(72.14% 0.22359 267.05)",
+          "oklch(83.57% 0.22359 267.05)",
+          "oklch(95.00% 0.22359 267.05)"
+        ]
+      },
+      "wash": {
+        "role": "primary",
+        "displayName": "Cobalt Wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.01793 272.31)",
+          "oklch(26.43% 0.01793 272.31)",
+          "oklch(37.86% 0.01793 272.31)",
+          "oklch(49.29% 0.01793 272.31)",
+          "oklch(60.71% 0.01793 272.31)",
+          "oklch(72.14% 0.01793 272.31)",
+          "oklch(83.57% 0.01793 272.31)",
+          "oklch(95.00% 0.01793 272.31)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Soft Divider",
+        "tonalRamp": [
+          "oklch(15.00% 0.00290 264.54)",
+          "oklch(26.43% 0.00290 264.54)",
+          "oklch(37.86% 0.00290 264.54)",
+          "oklch(49.29% 0.00290 264.54)",
+          "oklch(60.71% 0.00290 264.54)",
+          "oklch(72.14% 0.00290 264.54)",
+          "oklch(83.57% 0.00290 264.54)",
+          "oklch(95.00% 0.00290 264.54)"
+        ]
+      },
+      "amber": {
+        "role": "secondary",
+        "displayName": "Caution Amber",
+        "tonalRamp": [
+          "oklch(15.00% 0.09635 71.66)",
+          "oklch(26.43% 0.09635 71.66)",
+          "oklch(37.86% 0.09635 71.66)",
+          "oklch(49.29% 0.09635 71.66)",
+          "oklch(60.71% 0.09635 71.66)",
+          "oklch(72.14% 0.09635 71.66)",
+          "oklch(83.57% 0.09635 71.66)",
+          "oklch(95.00% 0.09635 71.66)"
+        ]
+      },
+      "green": {
+        "role": "secondary",
+        "displayName": "Evidence Green",
+        "tonalRamp": [
+          "oklch(15.00% 0.07803 168.51)",
+          "oklch(26.43% 0.07803 168.51)",
+          "oklch(37.86% 0.07803 168.51)",
+          "oklch(49.29% 0.07803 168.51)",
+          "oklch(60.71% 0.07803 168.51)",
+          "oklch(72.14% 0.07803 168.51)",
+          "oklch(83.57% 0.07803 168.51)",
+          "oklch(95.00% 0.07803 168.51)"
+        ]
+      },
+      "product": {
+        "role": "neutral",
+        "displayName": "Product Stone",
+        "tonalRamp": [
+          "oklch(15.00% 0.00674 97.35)",
+          "oklch(26.43% 0.00674 97.35)",
+          "oklch(37.86% 0.00674 97.35)",
+          "oklch(49.29% 0.00674 97.35)",
+          "oklch(60.71% 0.00674 97.35)",
+          "oklch(72.14% 0.00674 97.35)",
+          "oklch(83.57% 0.00674 97.35)",
+          "oklch(95.00% 0.00674 97.35)"
+        ]
+      },
+      "blue-hover": {
+        "role": "primary",
+        "displayName": "Cobalt Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.20733 266.34)",
+          "oklch(26.43% 0.20733 266.34)",
+          "oklch(37.86% 0.20733 266.34)",
+          "oklch(49.29% 0.20733 266.34)",
+          "oklch(60.71% 0.20733 266.34)",
+          "oklch(72.14% 0.20733 266.34)",
+          "oklch(83.57% 0.20733 266.34)",
+          "oklch(95.00% 0.20733 266.34)"
+        ]
+      },
+      "field-line": {
+        "role": "neutral",
+        "displayName": "Field Outline",
+        "tonalRamp": [
+          "oklch(15.00% 0.00588 264.53)",
+          "oklch(26.43% 0.00588 264.53)",
+          "oklch(37.86% 0.00588 264.53)",
+          "oklch(49.29% 0.00588 264.53)",
+          "oklch(60.71% 0.00588 264.53)",
+          "oklch(72.14% 0.00588 264.53)",
+          "oklch(83.57% 0.00588 264.53)",
+          "oklch(95.00% 0.00588 264.53)"
+        ]
+      },
+      "positive-wash": {
+        "role": "secondary",
+        "displayName": "Support Wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.01406 155.59)",
+          "oklch(26.43% 0.01406 155.59)",
+          "oklch(37.86% 0.01406 155.59)",
+          "oklch(49.29% 0.01406 155.59)",
+          "oklch(60.71% 0.01406 155.59)",
+          "oklch(72.14% 0.01406 155.59)",
+          "oklch(83.57% 0.01406 155.59)",
+          "oklch(95.00% 0.01406 155.59)"
+        ]
+      },
+      "caution-wash": {
+        "role": "secondary",
+        "displayName": "Caution Wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.02771 81.47)",
+          "oklch(26.43% 0.02771 81.47)",
+          "oklch(37.86% 0.02771 81.47)",
+          "oklch(49.29% 0.02771 81.47)",
+          "oklch(60.71% 0.02771 81.47)",
+          "oklch(72.14% 0.02771 81.47)",
+          "oklch(83.57% 0.02771 81.47)",
+          "oklch(95.00% 0.02771 81.47)"
+        ]
+      },
+      "neutral-wash": {
+        "role": "neutral",
+        "displayName": "Neutral Wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.00866 264.52)",
+          "oklch(26.43% 0.00866 264.52)",
+          "oklch(37.86% 0.00866 264.52)",
+          "oklch(49.29% 0.00866 264.52)",
+          "oklch(60.71% 0.00866 264.52)",
+          "oklch(72.14% 0.00866 264.52)",
+          "oklch(83.57% 0.00866 264.52)",
+          "oklch(95.00% 0.00866 264.52)"
+        ]
+      },
+      "neutral-ink": {
+        "role": "neutral",
+        "displayName": "Neutral Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.05586 269.90)",
+          "oklch(26.43% 0.05586 269.90)",
+          "oklch(37.86% 0.05586 269.90)",
+          "oklch(49.29% 0.05586 269.90)",
+          "oklch(60.71% 0.05586 269.90)",
+          "oklch(72.14% 0.05586 269.90)",
+          "oklch(83.57% 0.05586 269.90)",
+          "oklch(95.00% 0.05586 269.90)"
+        ]
+      },
+      "snapshot-wash": {
+        "role": "neutral",
+        "displayName": "Snapshot Neutral",
+        "tonalRamp": [
+          "oklch(15.00% 0.00529 106.50)",
+          "oklch(26.43% 0.00529 106.50)",
+          "oklch(37.86% 0.00529 106.50)",
+          "oklch(49.29% 0.00529 106.50)",
+          "oklch(60.71% 0.00529 106.50)",
+          "oklch(72.14% 0.00529 106.50)",
+          "oklch(83.57% 0.00529 106.50)",
+          "oklch(95.00% 0.00529 106.50)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Page Heading",
+        "purpose": "Compact 30px desktop page headings and small-mobile page titles; platform font is preserved."
+      },
+      "headline": {
+        "displayName": "Section Heading",
+        "purpose": "Reading and decision sections."
+      },
+      "title": {
+        "displayName": "Compact Heading",
+        "purpose": "Supporting section titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default consumer-app sans-serif."
+      },
+      "quote": {
+        "displayName": "Review Quote",
+        "purpose": "Evidence rows use 14px with line height 1.65 on desktop and mobile; drawer text retains its own sizing."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Primary and secondary action labels."
+      },
+      "label": {
+        "displayName": "Status Label",
+        "purpose": "Pills and small metadata."
+      },
+      "markdown": {
+        "displayName": "Markdown",
+        "purpose": "Derived text export only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "desktop-product-dossier",
+        "value": "0 6px 22px #20242b09",
+        "purpose": "Faint ambient lift below the compact desktop product card."
+      },
+      {
+        "name": "demo-popover",
+        "value": "0 12px 36px #20242b26",
+        "purpose": "Floating native Demo controls."
+      },
+      {
+        "name": "source-drawer",
+        "value": "-12px 0 48px #1118211a",
+        "purpose": "Directional separation for source inspection."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Shared entry and transform easing."
+      },
+      {
+        "name": "state-feedback",
+        "value": "180ms",
+        "purpose": "Button and source-control background changes; primary hover moves up 1px and active returns."
+      },
+      {
+        "name": "evidence-entry",
+        "value": "180ms",
+        "purpose": "Evidence row and native Demo popover entry from translateY(4px), opacity .65."
+      },
+      {
+        "name": "drawer-entry",
+        "value": "220ms",
+        "purpose": "Source inspection enters from translateX(24px), opacity .7."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation:none; transition:none; scroll-behavior:auto",
+        "purpose": "Applied to all elements and pseudo-elements for prefers-reduced-motion:reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-baseline",
+        "value": "1000px"
+      },
+      {
+        "name": "narrow-desktop-findings",
+        "value": "940px"
+      },
+      {
+        "name": "stacked",
+        "value": "760px"
+      },
+      {
+        "name": "small-mobile",
+        "value": "480px"
+      }
+    ],
+    "tonalRampNote": "Synthesized OKLCH preview strips retain each extracted hue/chroma while stepping lightness. They are panel metadata, not implemented interface tokens."
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main user action with actual disabled and hover states.",
+      "html": "<button class=\"ds-primary\" type=\"button\">Interpret my needs</button>",
+      "css": ".ds-primary,.ds-secondary{min-height:44px;padding:11px 18px;border-radius:10px;font:600 13px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background 180ms,transform 180ms var(--ease,cubic-bezier(.16,1,.3,1))}.ds-primary:disabled,.ds-secondary:disabled{cursor:default;opacity:.48}.ds-primary:active:not(:disabled),.ds-secondary:active:not(:disabled){transform:translateY(0)}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-source:focus-visible,.ds-steps button:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-primary,.ds-secondary{transition:none}}.ds-primary{border:0;color:#fff;background:var(--blue,#3155e7)}.ds-primary:hover:not(:disabled){background:#2345c9;transform:translateY(-1px)}"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting decision or drawer-close action.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">Back to evidence</button>",
+      "css": ".ds-primary,.ds-secondary{min-height:44px;padding:11px 18px;border-radius:10px;font:600 13px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background 180ms,transform 180ms var(--ease,cubic-bezier(.16,1,.3,1))}.ds-primary:disabled,.ds-secondary:disabled{cursor:default;opacity:.48}.ds-primary:active:not(:disabled),.ds-secondary:active:not(:disabled){transform:translateY(0)}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-source:focus-visible,.ds-steps button:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-primary,.ds-secondary{transition:none}}.ds-secondary{color:var(--ink,#20242b);background:#fff;border:1px solid #d8dade}.ds-secondary:hover:not(:disabled){background:#f3f4f6}"
+    },
+    {
+      "name": "Review Text Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Supplied review entry retains ordinary field focus and disabled treatment.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-additional\">Additional reviews</label><textarea class=\"ds-field\" id=\"ds-additional\" rows=\"4\" placeholder=\"Paste relevant reviews, separated by a blank line.\"></textarea>",
+      "css": ".ds-field-label{display:block;font:600 13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin-bottom:9px;color:var(--ink,#20242b)}.ds-field{width:100%;max-width:100%;font:400 13px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink,#20242b);background:var(--surface,#fff);border:1px solid #d8dade;border-radius:9px;padding:11px 13px;resize:vertical;caret-color:var(--blue,#3155e7)}.ds-field:focus{outline:2px solid var(--blue,#3155e7);outline-offset:2px}.ds-field:disabled{color:var(--muted,#626a76);background:#f7f7f6}.ds-field::placeholder{color:#707784;opacity:1}"
+    },
+    {
+      "name": "Evidence Polarity Labels",
+      "kind": "chip",
+      "refersTo": "pill-positive",
+      "description": "Written Supports/Challenges states with their existing green and amber tints.",
+      "html": "<span class=\"ds-pill ds-positive\">Supports</span> <span class=\"ds-pill ds-caution\">Challenges</span>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;font:600 11px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:5px 9px;border-radius:6px}.ds-positive{color:var(--green,#246953);background:#eaf4ed}.ds-caution{color:var(--amber,#845817);background:#fcf1de}"
+    },
+    {
+      "name": "Decision Stages",
+      "kind": "nav",
+      "description": "Compact desktop text stages with current underline; numbered stages remain visible on mobile.",
+      "html": "<nav class=\"ds-steps\" aria-label=\"Purchase decision steps\"><button type=\"button\" aria-label=\"1 Your criteria\"><span>1</span>Criteria</button><button type=\"button\" aria-label=\"2 Evidence workspace\" aria-current=\"step\"><span>2</span>Evidence</button><button type=\"button\" aria-label=\"3 Decision brief\" disabled><span>3</span>Decision</button></nav>",
+      "css": ".ds-steps{display:flex;gap:32px;padding:16px 0 20px;border-bottom:1px solid var(--line,#e6e7e9)}.ds-steps button{display:flex;gap:9px;align-items:center;border:0;background:none;padding:5px 0;min-height:36px;color:var(--muted,#626a76);font:400 13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.ds-steps button span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ebece9;color:var(--muted,#626a76);font-size:11px;font-variant-numeric:tabular-nums}.ds-steps button[aria-current]{font-weight:650;color:var(--blue,#3155e7)}.ds-steps button[aria-current] span{background:var(--blue,#3155e7);color:#fff}.ds-steps button:disabled{opacity:.65;cursor:default}@media(max-width:760px){.ds-steps{gap:24px;padding:8px 0 14px}.ds-steps button{font-size:12px;min-height:44px}}@media(max-width:480px){.ds-steps{justify-content:space-between;gap:10px;padding:0}.ds-steps button{font-size:11px;gap:5px}.ds-steps button span{width:17px;height:17px;font-size:10px;flex:none}}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-source:focus-visible,.ds-steps button:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(min-width:761px){.ds-steps{gap:26px;padding:4px 0 12px}.ds-steps button{min-height:32px;font-size:12px;border-bottom:2px solid transparent}.ds-steps button span{display:none}.ds-steps button[aria-current]{border-bottom-color:var(--blue,#3155e7)}}"
+    },
+    {
+      "name": "Source Control",
+      "kind": "button",
+      "description": "Review-ID control next to cited material; panel icon is expanded to inline SVG.",
+      "html": "<button class=\"ds-source\" type=\"button\">R5 <svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4 12 12 4M5 4h7v7\"/></svg></button>",
+      "css": ".ds-source{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:0;color:var(--blue,#3155e7);background:#f0f3ff;border-radius:6px;min-height:32px;padding:4px 8px;font:600 11px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background 180ms}.ds-source:hover{background:#dee6ff}.ds-source svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.3}@media(max-width:760px){.ds-source{min-width:44px;min-height:44px}}.ds-primary:focus-visible,.ds-secondary:focus-visible,.ds-source:focus-visible,.ds-steps button:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-source{transition:none}}"
+    },
+    {
+      "name": "Criterion Findings",
+      "kind": "card",
+      "refersTo": "criterion-findings",
+      "description": "Compact criterion card with actual cited-item support/challenge counts and separate readable evidence.",
+      "html": "<section class=\"ds-findings\"><h2>Long-session comfort</h2><p>Critical · Library study; avoid clamping, pad heat · 120 min</p><div class=\"ds-counts\"><span><strong>2</strong>Supporting</span><span><strong>1</strong>Challenging</span><span class=\"ds-count-note\">Cited items</span></div><h3>Supporting evidence</h3><blockquote>In the library I wear these for 120 minutes at a time, without glasses.</blockquote></section>",
+      "css": ".ds-findings{padding:24px;border-radius:var(--radius,16px);background:var(--surface,#fff);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink,#20242b)}.ds-findings h2{margin:0 0 5px;font-size:22px;font-weight:650;line-height:1.35;letter-spacing:-.02em}.ds-findings p{font-size:12px;line-height:1.6;color:var(--muted,#626a76);margin:0 0 22px}.ds-findings h3{font-size:11px;font-weight:650;color:var(--green,#246953);margin:0 0 14px}.ds-findings blockquote{margin:14px 0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}@media(max-width:480px){.ds-findings{padding:18px}.ds-findings h2{font-size:20px}.ds-findings h3{font-size:12px}.ds-findings blockquote{font-size:14px}}@media(min-width:761px){.ds-findings{padding:20px}.ds-findings h2{font-size:20px}.ds-findings blockquote{font-size:14px}}.ds-counts{display:flex;align-items:center;gap:20px;padding:10px 0 14px;margin:0 0 16px;border-bottom:1px solid var(--line,#e6e7e9);font-size:11px;color:var(--muted,#626a76)}.ds-counts>span{display:flex;gap:6px;align-items:center}.ds-counts strong{font-size:16px;font-weight:650;color:var(--ink,#20242b);font-variant-numeric:tabular-nums}.ds-count-note{margin-left:auto;font-size:10px}"
+    },
+    {
+      "name": "Compact Agent Run",
+      "kind": "custom",
+      "description": "Default-closed desktop/mobile disclosure; sample figures show a recorded deterministic capture, not universal values.",
+      "html": "<details class=\"ds-run\"><summary><span>Agent Run</span><span class=\"ds-metrics\">9 ms · 0 model calls</span></summary><p>Deterministic execution; no model requests. Durations use actual timestamps. Nested calls count once in runtime; human waiting is excluded.</p></details>",
+      "css": ".ds-run{font:400 12px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink,#20242b)}.ds-run summary{font-weight:600;min-height:32px;padding:3px 0;cursor:pointer}.ds-metrics{float:right;color:var(--muted,#626a76);font-size:11px;font-weight:400;font-variant-numeric:tabular-nums}.ds-run p{font-size:12px;color:var(--muted,#626a76);margin:14px 0}.ds-run summary:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(min-width:761px){.ds-run summary{padding:5px 0}}@media(max-width:480px){.ds-metrics{font-size:10px}}"
+    },
+    {
+      "name": "Source Reading Drawer",
+      "kind": "custom",
+      "description": "Independent full-height source inspection with original text and an exact-quote wash.",
+      "html": "<section class=\"ds-drawer\" aria-label=\"Source review R5\"><div class=\"ds-drawer-heading\"><h2>Source review R5</h2><button type=\"button\" class=\"ds-close\">Close</button></div><h3>Original review</h3><blockquote>Wearing glasses during 120-minute library sessions, the arms press into my ears and hurt.</blockquote><h3>Exact quote</h3><blockquote class=\"ds-exact\">Wearing glasses during 120-minute library sessions, the arms press into my ears and hurt.</blockquote><p>Exact source text. Review authenticity has not been verified.</p></section>",
+      "css": ".ds-drawer{width:min(560px,100%);background:#fff;height:100dvh;overflow-y:auto;overscroll-behavior:contain;padding:0 30px 30px;box-shadow:-12px 0 48px #1118211a;color:var(--ink,#20242b);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.ds-drawer-heading{position:sticky;top:0;background:#fff;padding:22px 0 18px;margin-bottom:10px;border-bottom:1px solid var(--line,#e6e7e9);display:flex;align-items:center;justify-content:space-between;gap:14px}.ds-drawer h2{font-size:21px;line-height:1.35;font-weight:650;letter-spacing:-.02em;margin:0}.ds-drawer h3{font-size:15px;font-weight:650;line-height:1.4;margin:26px 0 0}.ds-drawer blockquote{font-size:15px;line-height:1.75;margin:14px 0 22px;overflow-wrap:anywhere}.ds-drawer .ds-exact{background:var(--wash,#eef2ff);padding:16px 18px;border-radius:10px;font-size:14px}.ds-drawer p{font-size:12px;line-height:1.6;color:var(--muted,#626a76)}.ds-close{min-height:44px;padding:11px 18px;border-radius:10px;font:600 13px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink,#20242b);background:#fff;border:1px solid #d8dade;cursor:pointer;transition:background 180ms}.ds-close:hover{background:#f3f4f6}.ds-close:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}@media(max-width:480px){.ds-drawer{padding:0 20px max(24px,env(safe-area-inset-bottom))}.ds-drawer-heading{padding-top:max(18px,env(safe-area-inset-top))}.ds-drawer h2{font-size:19px}.ds-drawer blockquote{font-size:14px}}@media(prefers-reduced-motion:reduce){.ds-close{transition:none}}"
+    },
+    {
+      "name": "Native Demo Controls",
+      "kind": "custom",
+      "refersTo": "demo-trigger",
+      "description": "Default-closed native auto popover retains original demo mode, path selector and authenticity disclosure.",
+      "html": "<button class=\"ds-demo-trigger\" type=\"button\" popovertarget=\"ds-demo-controls\" popovertargetaction=\"toggle\" aria-label=\"Demo controls\">Demo<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"m4 6 4 4 4-4\"/></svg></button><div class=\"ds-demo-popover\" id=\"ds-demo-controls\" popover=\"auto\"><div class=\"ds-demo-heading\"><strong>Demo controls</strong><span>Deterministic demo</span></div><label class=\"ds-demo-path\">Try a path<select><option>Comfort conflict</option></select></label><p>Prepared examples are synthetic. Pasted reviews are not verified.</p></div>",
+      "css": ".ds-demo-trigger{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;min-height:36px;border:0;background:transparent;border-radius:8px;color:var(--muted,#626a76);font:400 12px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.ds-demo-trigger:hover{background:#eeeee9;color:var(--ink,#20242b)}.ds-demo-trigger:focus-visible{outline:2px solid var(--blue,#3155e7);outline-offset:4px}.ds-demo-trigger svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.ds-demo-popover{position:fixed;inset:60px max(20px,calc((100vw - 1080px)/2)) auto auto;width:320px;max-width:calc(100vw - 32px);margin:0;padding:18px;border:0;border-radius:12px;background:#fff;color:var(--ink,#20242b);box-shadow:0 12px 36px #20242b26;font:400 11px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.ds-demo-popover:popover-open{animation:ds-demo-in 180ms var(--ease,cubic-bezier(.16,1,.3,1))}.ds-demo-popover::backdrop{background:transparent}.ds-demo-heading{display:flex;align-items:center;gap:12px;margin-bottom:14px}.ds-demo-heading strong{font-size:13px;font-weight:600}.ds-demo-heading span{margin-left:auto}.ds-demo-path{display:flex;align-items:center;gap:12px;margin-bottom:14px}.ds-demo-path select{font:400 12px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:38px;flex:1;background:#f8f8f6;color:var(--ink,#20242b);padding:4px 7px;border:1px solid var(--line,#e6e7e9);border-radius:6px}.ds-demo-path select:focus{outline:2px solid var(--blue,#3155e7);outline-offset:2px}.ds-demo-popover p{margin:4px 0 0;font-size:11px;color:var(--muted,#626a76)}@media(max-width:760px){.ds-demo-popover{top:54px;right:16px}}@keyframes ds-demo-in{from{transform:translateY(4px);opacity:.65}to{transform:translateY(0);opacity:1}}@media(prefers-reduced-motion:reduce){.ds-demo-popover{animation:none!important}}"
+    },
+    {
+      "name": "Shopper Snapshot",
+      "kind": "card",
+      "refersTo": "shopper-snapshot",
+      "description": "Example matches the deterministic conflict brief: adequate/high subway coverage and watched comfort risk; unknown group is absent without actual critical gaps.",
+      "html": "<section class=\"ds-snapshot\"><div class=\"ds-snapshot-heading\"><h2>Your fit, at a glance.</h2><span class=\"ds-snapshot-status\">Complete with caveats</span></div><dl class=\"ds-snapshot-grid\"><div><dt>Strong evidence</dt><dd><strong>Subway noise cancellation</strong><span>High coverage confidence</span></dd></div><div><dt>Watch closely</dt><dd><strong>Long-session comfort</strong><span>120 min sessions · adverse account with glasses</span></dd></div></dl><p>Strength reflects coverage of supplied reviews, not authenticity or guaranteed personal fit.</p></section>",
+      "css": ".ds-snapshot{padding:20px 22px;background:#f6f6f2;border-radius:12px;color:var(--ink,#20242b);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.ds-snapshot-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.ds-snapshot-heading h2{font-size:21px;font-weight:650;line-height:1.35;letter-spacing:-.02em;margin:0}.ds-snapshot-status{font-size:11px;font-weight:600;line-height:1.4;padding:5px 9px;border-radius:6px;color:var(--green,#246953);background:#eaf4ed}.ds-snapshot-grid{display:flex;gap:28px;margin:0}.ds-snapshot-grid>div{flex:1;min-width:0}.ds-snapshot-grid dt{font-size:12px;font-weight:600;margin-bottom:9px;color:var(--muted,#626a76)}.ds-snapshot-grid>div:first-child dt{color:var(--green,#246953)}.ds-snapshot-grid>div:nth-child(2) dt{color:var(--amber,#845817)}.ds-snapshot-grid dd{margin:0;line-height:1.5}.ds-snapshot-grid strong{display:block;font-size:14px;font-weight:600}.ds-snapshot-grid span{display:block;font-size:12px;color:var(--muted,#626a76);margin-top:4px}.ds-snapshot p{font-size:11px;line-height:1.6;color:var(--muted,#626a76);margin:16px 0 0}@media(max-width:760px){.ds-snapshot{padding:18px}.ds-snapshot-grid{flex-direction:column;gap:18px}.ds-snapshot-heading{align-items:flex-start;flex-direction:column;gap:10px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Evidence-Led Buying Companion",
+    "overview": "BuyLens adapts the user's pinned modern consumer iOS visual world: warm neutral space, clean platform sans-serif, cobalt actions and a prominent product anchor. White reading surfaces and softly rounded product plates make dense review material approachable without adding shopping features or performance claims.\n\nThe existing headphone SVG remains the required product illustration. The three surfaces keep confirmed needs, inspectable evidence and the decision brief connected; the source drawer preserves exact quotations and diagnostic context. Compact desktop composition puts product context, the decision/action and criterion cards ahead of optional execution detail. A brief snapshot makes existing coverage, cited risks and critical gaps easier to compare.\n\nUpdated 2026-10-03 after the approved second-pass refinement. This reconciles the incumbent consumer-app system with the finished code; its palette, platform font, illustration and native product functions are preserved.\n\nThis is a code-led reference-video adaptation. No random concept seed, raster reproduction comp, detector output or visual pixel-match certification is claimed. The presentation changes preserve the existing backend, controller, APIs, fixtures and Markdown behavior; they do not establish a verified live integration.",
+    "keyCharacteristics": [
+      "Warm white canvas and white reading surfaces.",
+      "Platform sans-serif hierarchy with prominent existing headphone SVG.",
+      "Cobalt actions, green support and amber caution.",
+      "Criterion-grouped evidence with exact source inspection.",
+      "Real execution disclosures and preserved unknowns."
+    ],
+    "rules": [
+      {
+        "name": "Confirmed Criteria",
+        "body": "Render findings and brief claims only from the session's confirmed supported criteria and supplied evidence. Long-session comfort and subway noise cancellation remain the demo's scope; battery, sound quality and invented numerical scores do not enter this system.",
+        "section": "components"
+      },
+      {
+        "name": "Observed Execution",
+        "body": "Execution labels, statuses, durations and call counts come from recorded operations. Deterministic mode can show zero model calls; pending server requests stay pending until observed steps return.",
+        "section": "components"
+      },
+      {
+        "name": "Source Is Inspectable",
+        "body": "Keep a source control beside cited evidence and retain original review text, exact quotation, criterion, context and diagnostic caveats in the drawer. A checked quotation does not establish review authenticity or personal fit.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do use the shared warm-paper, white-surface, charcoal and cobalt tokens.",
+      "Do retain the user's pinned platform sans-serif and existing headphone SVG.",
+      "Do place the available next action before the compact Agent Run disclosure on small mobile screens.",
+      "Do separate supports, challenges, coverage, unknowns and actual completion caveats.",
+      "Do retain source inspection, synthetic-review disclosure and reduced-motion behavior."
+    ],
+    "donts": [
+      "Don't introduce battery or sound criteria, fake ratings, performance scores or shopping controls.",
+      "Don't turn observed execution into an invented timeline, fabricated duration or decorative loading delay.",
+      "Don't present coverage confidence as review authenticity or a satisfaction probability.",
+      "Don't omit adverse accounts or critical gaps from the brief.",
+      "Don't claim reference-video pixel equivalence or validated live backend behavior."
+    ]
+  }
+}

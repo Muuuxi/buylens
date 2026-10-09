@@ -1,0 +1,72 @@
+{
+  "label": "SYNTHETIC TEST DATA ONLY — newly authored for live-agent validation, not real customer reviews",
+  "product": "Validation-H2 — fictional over-ear ANC headphones",
+  "need": "I am a student taking underground subway trains every weekday. I want less low train rumble on the commute and comfortable headphones for three-hour library reading sessions. Head pressure, ear pain and heat matter to me. I have not decided to buy yet.",
+  "reviews": [
+    {
+      "validationId": "L01",
+      "rating": 4,
+      "text": "Eight weeks into ownership, I regularly read in the library for 210 minutes with these on. I do not wear glasses. The headband stays comfortable and my ears do not ache, although the cushions feel warm during the last half hour.",
+      "purpose": "Comfortable for more than three hours; specific context, duration and limitation"
+    },
+    {
+      "validationId": "L02",
+      "rating": 2,
+      "text": "I have owned this pair for five weeks. During four-hour library study blocks, head pressure becomes distracting after about three hours. I wear thick-framed glasses and the cushions push the arms against my temples. Taking the headphones off relieves it; I have not tested them without glasses.",
+      "purpose": "Long-wear discomfort; glasses context; conflicting comfort evidence"
+    },
+    {
+      "validationId": "L03",
+      "rating": 5,
+      "text": "Five stars because delivery was fast, but comfort is disappointing. For my 180-minute library sessions the headband leaves a sore spot and the ear pads press on my spectacle frames. It has happened on each of my first six study days, so I would not call these comfortable for long reading.",
+      "purpose": "Five-star rating contradicts the negative usage text"
+    },
+    {
+      "validationId": "L04",
+      "rating": 4,
+      "text": "After two months of weekday subway travel, switching ANC on noticeably softens the deep rolling noise inside the train. My ride is 55 minutes. Brake squeals and station announcements still cut through, so it is quieter rather than silent.",
+      "purpose": "Direct subway low-frequency ANC evidence with limitations"
+    },
+    {
+      "validationId": "L05",
+      "rating": 4,
+      "text": "At our open-plan office I have tried ANC for 90 minutes a day over the last fortnight. It makes the ventilation drone less intrusive, but colleagues speaking next to me are still clear. I have not taken this pair onto a train or subway.",
+      "purpose": "Office-only ANC, explicit lack of subway testing"
+    },
+    {
+      "validationId": "L06",
+      "rating": 5,
+      "text": "Great product, highly recommended.",
+      "purpose": "Extremely generic, no actual usage evidence"
+    },
+    {
+      "validationId": "L07",
+      "rating": 5,
+      "text": "Premium quality, outstanding comfort and incredible noise cancellation. A perfect everyday companion with exceptional value. Buy with confidence!",
+      "purpose": "Promotional/template-like wording with no context or duration"
+    },
+    {
+      "validationId": "L08",
+      "rating": 5,
+      "text": "Premium quality, incredible comfort and outstanding noise cancellation. Your perfect everyday companion at exceptional value. Purchase with confidence!",
+      "purpose": "Similar promotional wording; not an exact or normalized duplicate"
+    },
+    {
+      "validationId": "L09",
+      "rating": 4,
+      "text": "I have had these for seven months, using them for 195-minute library sessions several days a week. I do not use glasses. There is still no painful clamping, but the padding is softer now and gets sweaty in a warm room. Seven months is how long I have owned them, not the length of a single session.",
+      "purpose": "Longer-term ownership distinguished from session duration; second direct comfortable account"
+    },
+    {
+      "validationId": "L10",
+      "rating": 4,
+      "text": "For the past five weeks I have worn these on a 35-minute underground subway ride. ANC lowers the continuous low rumble enough that I can follow a podcast at a lower volume. Voices and the high screech on bends remain audible. This is train use, not an office test.",
+      "purpose": "Second distinct direct subway ANC account"
+    }
+  ],
+  "validationVariants": {
+    "conflictWithCoverage": ["L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"],
+    "missingSubway": ["L01", "L02", "L03", "L05", "L06", "L07", "L08", "L09"],
+    "additionalSubwayEvidence": ["L04", "L10"]
+  }
+}

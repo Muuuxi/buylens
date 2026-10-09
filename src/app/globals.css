@@ -25,6 +25,7 @@ textarea{resize:vertical;line-height:1.65}
 input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:2px}
 input:disabled,textarea:disabled,select:disabled{color:var(--muted);background:#f7f7f6}
 ::placeholder{color:#707784;opacity:1}
+#need::placeholder,#clarify::placeholder,#additional::placeholder{color:#8b929e;opacity:1}
 ::selection{background:#dce5ff;color:var(--ink)}
 
 .header{max-width:1200px;margin:auto;height:86px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
@@ -218,6 +219,7 @@ blockquote{color:var(--ink);margin:14px 0;font-size:14px;line-height:1.75;overfl
 .evidence-request h2{font-size:22px}
 .evidence-request p{font-size:13px;color:#4b5f86}
 .evidence-request textarea{background:#fff;font-size:13px;margin-bottom:15px}
+.evidence-request .guided-note{margin:5px 0 9px;color:#68758d}
 .evidence-request>.text-button{margin-top:10px}
 .workspace-finish{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:20px 24px;background:#edf2ff;border-radius:12px}
 .workspace-finish p{margin:0;font-size:13px;color:#465b85;max-width:39ch}

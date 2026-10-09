@@ -10,11 +10,15 @@ import { AgentRun } from './agent-run';
 import { LanguageSwitch, Localized, useLanguage } from './language';
 import { localizedMarkdown } from '@/lib/i18n';
 import { codeForError, errorMessage } from '@/lib/error-code';
+import { guidedClarification, guidedNeed, guidedReviews, isGuidedCarryOnNeed, untouchedExample } from '@/lib/guided-examples';
 import type { Criterion, Evidence, RunStep, Session } from '@/lib/types';
 
 const STORAGE = 'buylens-normal-v2';
 const DEMO_STORAGE = 'buylens-demo-v1';
 const DEMO_SELECTED = 'buylens-demo-selected-v2';
+const GUIDED_TOUCHED = 'buylens-guided-touched-v1';
+type GuidedField = 'need' | 'clarify' | 'additional';
+const untouchedFields = { need: false, clarify: false, additional: false };
 const actionLabels: Record<string, string> = { preparing: 'Preparing the reviews', extracting: 'Finding evidence for your criteria', deciding: 'Choosing the next action', investigating: 'Investigating the evidence conflict', waiting: 'More evidence would help', composing: 'Preparing your decision brief', complete: 'Analysis complete', stopped: 'Stopped with critical unknowns' };
 const decisionLabels = {
   INVESTIGATE_CONFLICT: 'Investigate conflict',
@@ -39,6 +43,7 @@ export default function BuyLens() {
   const [error, setError] = useState('');
   const [answer, setAnswer] = useState('');
   const [additional, setAdditional] = useState('');
+  const [touched, setTouched] = useState(untouchedFields);
   const [source, setSource] = useState<string | null>(null);
   const [sourceEvidence, setSourceEvidence] = useState<string | null>(null);
   const [showMarkdown, setShowMarkdown] = useState(false);
@@ -55,6 +60,11 @@ export default function BuyLens() {
     const initialIntent = intent.current;
     let demoSelected = false;
     try {
+      const savedTouched = sessionStorage.getItem(GUIDED_TOUCHED);
+      if (savedTouched) {
+        const parsed = JSON.parse(savedTouched) as Partial<typeof untouchedFields>;
+        setTouched({ need: parsed.need === true, clarify: parsed.clarify === true, additional: parsed.additional === true });
+      }
       demoSelected = localStorage.getItem(DEMO_SELECTED) === '1';
       const saved = localStorage.getItem(demoSelected ? DEMO_STORAGE : STORAGE);
       const parsed = saved ? JSON.parse(saved) as Session : null;
@@ -83,16 +93,29 @@ export default function BuyLens() {
   }, [source]);
   const s = session;
   const commit = (next: Session) => setSession(structuredClone(next));
-  async function command(action: string, payload: Record<string, unknown> = {}) {
-    if (!s) return;
+  function markTouched(field: GuidedField) {
+    setTouched(previous => {
+      const next = { ...previous, [field]: true };
+      try { sessionStorage.setItem(GUIDED_TOUCHED, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+  function resetTouched() {
+    setTouched(untouchedFields);
+    try { sessionStorage.removeItem(GUIDED_TOUCHED); } catch {}
+  }
+  async function command(action: string, payload: Record<string, unknown> = {}, materializedNeed?: string) {
+    const current = materializedNeed && s?.mode === 'live' ? { ...s, need: materializedNeed } : s;
+    if (!current) return;
+    if (materializedNeed) commit(current);
     setBusy(true); setError('');
     try {
-      if (s.mode === 'live') {
+      if (current.mode === 'live') {
         if (!config.live || !config.persistence) throw new Error('LIVE_UNAVAILABLE');
         if (!serverSession) {
           if (action !== 'interpret') throw new Error('INVALID_REQUEST');
           await pendingReset.current; pendingReset.current = null;
-          const created = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', mode: 'live', product: s.product, need: s.need, reviewText: s.reviewText }) });
+          const created = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', mode: 'live', product: current.product, need: current.need, reviewText: current.reviewText }) });
           const data = await created.json();
           if (!created.ok) throw new Error(data.code ?? 'ANALYSIS_FAILED');
           setServerSession(true); commit(data.session);
@@ -103,7 +126,7 @@ export default function BuyLens() {
         if (!response.ok) { if (data.session) commit(data.session); throw new Error(data.code ?? 'ANALYSIS_FAILED'); }
         commit(data.session);
       } else {
-        const next = structuredClone(s);
+        const next = structuredClone(current);
         const unobserve = observeRun(next, () => setRunning(structuredClone(next.run ?? [])));
         try {
         if (action === 'interpret') await interpret(next, demoReasoner);
@@ -136,6 +159,7 @@ export default function BuyLens() {
   function chooseScenario(key: ScenarioKey) {
     intent.current++;
     abandonServer();
+    resetTouched();
     setScenario(key); setScreen('criteria'); setError(''); setAnswer(''); setAdditional(''); setShowMarkdown(false); setCopyStatus('');
     try { localStorage.setItem(DEMO_SELECTED, '1'); localStorage.removeItem(STORAGE); } catch {}
     commit(createDemoSession(scenarios[key].reviews.join('\n\n')));
@@ -143,11 +167,13 @@ export default function BuyLens() {
   function resetPurchase() {
     intent.current++;
     abandonServer(); setScreen('criteria'); setError(''); setAnswer(''); setAdditional(''); setSource(null); setShowMarkdown(false); setCopyStatus('');
+    resetTouched();
     try { localStorage.removeItem(DEMO_SELECTED); localStorage.removeItem(STORAGE); } catch {}
     commit(createSession());
   }
   function updateInput(field: 'need' | 'product' | 'reviewText', value: string) {
     if (!s) return;
+    if (field === 'need') markTouched('need');
     intent.current++;
     if (serverSession) abandonServer();
     try { localStorage.removeItem(DEMO_SELECTED); } catch {}
@@ -166,6 +192,10 @@ export default function BuyLens() {
     </article>) : <p className="empty">{emptyMessage}</p>;
   }
   if (!s) return <Localized><main className="loading">Loading BuyLens…</main></Localized>;
+  const needGhost = s.mode === 'live' && !s.criteria.length ? untouchedExample(s.need, touched.need, guidedNeed[language]) : null;
+  const clarifyGhost = s.mode === 'live' && s.phase === 'clarify' ? untouchedExample(answer, touched.clarify, guidedClarification[language]) : null;
+  const evidenceGhost = s.mode === 'live' && s.phase === 'waiting' && !s.reviewText.trim() && isGuidedCarryOnNeed(s.need)
+    ? untouchedExample(additional, touched.additional, guidedReviews[language]) : null;
   const gaps = criticalGaps(s);
   const finished = ['complete', 'stopped'].includes(s.phase);
   const activeSource = s.reviews.find(r => r.id === source);
@@ -183,9 +213,9 @@ export default function BuyLens() {
         <div className="page-title"><div><h1>What matters to you?</h1><p>Start with your needs. We’ll look for evidence that actually answers them.</p></div><span className="subtle">One product. Your priorities.</span></div>
         <div className="criteria-layout">
           <aside className="product-dossier"><div className="product-visual">{s.mode === 'demo' ? <HeadphoneIllustration/> : <span>{s.product || 'Your product'}</span>}<span className="product-visual-caption">{s.mode === 'demo' ? 'Over-ear ANC headphones' : 'Your candidate product'}</span></div><div className="product-copy"><h2>{s.product.split('·')[0].trim() || 'Your product'}</h2><p>{s.mode === 'demo' ? 'Over-ear noise-cancelling headphones' : 'One product, your usage context.'}</p><dl><div><dt>Your use case</dt><dd>{s.criteria.length ? s.criteria.map(c => c.context).join(' · ') : s.need || 'Tell us what matters to you.'}</dd></div><div><dt>Analysis</dt><dd>{s.confirmed ? actionLabels[s.phase] : s.criteria.length ? 'Waiting for your confirmation' : 'Start with your priorities'}</dd></div></dl><p className="small">Product claims are not proof of real-world performance.</p></div></aside>
-          <section className="surface criteria-form"><div className="need-composer"><label className="field-label" htmlFor="need">Tell us how you’ll use it</label><textarea id="need" rows={4} value={s.need} disabled={s.confirmed || busy} onChange={e => updateInput('need', e.target.value)} placeholder="Tell BuyLens what matters to you…"/>{!s.criteria.length && <div className="composer-action"><span className="small">Your needs become criteria you can review.</span><button className="primary" disabled={busy} onClick={() => void command('interpret')}>{busy ? 'Interpreting…' : 'Interpret my needs'}</button></div>}</div><div className="product-field"><label className="field-label" htmlFor="product">The product you’re considering</label><input id="product" placeholder="Optional: product name or category" value={s.product} disabled={s.confirmed || busy} onChange={e => updateInput('product', e.target.value)}/></div>
+          <section className="surface criteria-form"><div className="need-composer"><label className="field-label" htmlFor="need">Tell us how you’ll use it</label><textarea id="need" rows={4} value={s.need} disabled={s.confirmed || busy} onFocus={() => markTouched('need')} onChange={e => updateInput('need', e.target.value)} placeholder={needGhost ?? (touched.need ? '' : 'Tell BuyLens what matters to you…')} aria-describedby={needGhost ? 'guided-need-note' : undefined}/>{needGhost && <span id="guided-need-note" className="sr-only">{language === 'zh' ? '灰色文字是示例，未输入且未聚焦时点击解读会使用此示例。' : 'Gray text is an example. Interpret will use it only if this field remains untouched.'}</span>}{!s.criteria.length && <div className="composer-action"><span className="small">Your needs become criteria you can review.</span><button className="primary" disabled={busy} onClick={() => void command('interpret', {}, needGhost ?? undefined)}>{busy ? 'Interpreting…' : 'Interpret my needs'}</button></div>}</div><div className="product-field"><label className="field-label" htmlFor="product">The product you’re considering</label><input id="product" placeholder="Optional: product name or category" value={s.product} disabled={s.confirmed || busy} onChange={e => updateInput('product', e.target.value)}/></div>
             <details className="review-input"><summary>Review input · {s.reviewText.split(/\n\s*\n/).filter(Boolean).length} reviews</summary><label className="field-label" htmlFor="reviews">One review per paragraph. Optional [rating=5] prefix.</label><textarea id="reviews" rows={7} value={s.reviewText} disabled={s.confirmed || busy} onChange={e => updateInput('reviewText', e.target.value)}/></details>
-            {s.phase === 'clarify' && <div className="clarification"><h3>One quick clarification</h3><p>{s.question}</p><label className="sr-only" htmlFor="clarify">Clarification answer</label><input id="clarify" value={answer} onChange={e => setAnswer(e.target.value)} placeholder="e.g. Subway and library, two hours at a time"/><button className="secondary" disabled={busy || !answer.trim()} onClick={() => void command('clarify', { answer })}>Update criteria</button><button className="text-button" disabled={busy} onClick={() => void command('clarify', { answer: 'Use editable proposed criteria; I will confirm the details.' })}>Use proposed criteria</button></div>}
+            {s.phase === 'clarify' && <div className="clarification"><h3>One quick clarification</h3><p>{s.question}</p><label className="sr-only" htmlFor="clarify">Clarification answer</label><input id="clarify" value={answer} onFocus={() => markTouched('clarify')} onChange={e => { markTouched('clarify'); setAnswer(e.target.value); }} placeholder={clarifyGhost ?? (touched.clarify ? '' : 'e.g. Subway and library, two hours at a time')}/><button className="secondary" disabled={busy || (!answer.trim() && !clarifyGhost)} onClick={() => { const response = answer.trim() || clarifyGhost; if (response) { if (clarifyGhost) setAnswer(response); void command('clarify', { answer: response }); } }}>Update criteria</button><button className="text-button" disabled={busy} onClick={() => void command('clarify', { answer: 'Use editable proposed criteria; I will confirm the details.' })}>Use proposed criteria</button></div>}
             {s.criteria.length > 0 && s.phase !== 'clarify' && <div className="criteria-editor"><div className="section-heading"><h2>Your buying criteria</h2><span className="pill neutral">{s.mode === 'demo' ? 'You confirm. Then we analyze.' : 'Generated by AI from your need. Confirm or edit.'}</span></div>{s.criteria.map((c, i) => <div className="criterion-edit" key={c.id}><div><label htmlFor={`criterion-${c.id}`}>{c.label}</label><input id={`criterion-${c.id}`} aria-label={`${c.label} context`} value={c.context} disabled={s.confirmed || busy || !!c.constraint} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, context: e.target.value }; commit({ ...s, criteria: cs }); }}/>{c.minutes !== null && <label className="duration">{s.mode === 'demo' ? 'Study session' : 'Use session'} <input type="number" min={s.mode === 'demo' ? 15 : 1} max={s.mode === 'demo' ? 480 : 10080} aria-label={s.mode === 'demo' ? 'Study session minutes' : 'Use session minutes'} value={c.minutes} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, minutes: Number(e.target.value) }; commit({ ...s, criteria: cs }); }}/> min</label>}{c.constraint && <label className="duration">{c.constraint.operator === 'lte' ? 'Maximum' : c.constraint.operator === 'gte' ? 'Minimum' : 'Required value'} <input type="number" min={0} step="any" aria-label={`${c.label} constraint value`} value={c.constraint.value} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = editConstraintValue(c, Number(e.target.value)); commit({ ...s, criteria: cs }); }}/>{c.constraint.unit}</label>}</div><select aria-label={`${c.label} priority`} value={c.priority} disabled={s.confirmed || busy} onChange={e => { const cs = [...s.criteria]; cs[i] = { ...c, priority: e.target.value as Criterion['priority'] }; commit({ ...s, criteria: cs }); }}><option value="Critical">Critical</option><option value="Medium">Medium</option><option value="Low">Low</option><option value="Hard constraint" disabled={!c.constraint}>Hard constraint</option></select></div>)}<p className="small">Only stated constraints are used. Review the generated criteria before confirming.</p><div className="button-row">{!s.confirmed ? <button className="primary" disabled={busy} onClick={async () => { if (await command('confirm', { criteria: s.criteria })) setScreen('workspace'); }}>Confirm & analyze reviews</button> : <><button className="primary" onClick={() => setScreen('workspace')}>Continue to evidence</button><button className="secondary" disabled={busy} onClick={() => void command('edit')}>Edit criteria</button></>}</div></div>}
           </section>
         </div>
@@ -195,7 +225,7 @@ export default function BuyLens() {
         <div className="page-title"><div><h1>Evidence, in your context.</h1><p>Supporting details, conflicting experiences, and the gaps between them.</p></div><span className="subtle">{s.reviews.length} reviews analyzed</span></div>
         <div className="workspace-product"><div className="workspace-product-visual">{s.mode === 'demo' ? <HeadphoneIllustration/> : <span aria-hidden="true">◇</span>}</div><div><h2>{s.product.split('·')[0].trim() || 'Your product'}</h2><p>{s.criteria.map(c => c.label).join(' · ')}</p></div><div className="workspace-product-actions"><span className="pill neutral">{actionLabels[s.phase]}</span><button className="text-button" disabled={busy} onClick={async () => { if (await command('edit')) setScreen('criteria'); }}>Edit criteria</button></div></div>
         <div className="workspace-layout"><section className="agent-panel" aria-live="polite"><span className="agent-state-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="5"/><path d="m14 14 5 5m-12-9 2 2 3-4"/></svg></span><div className="agent-decision-copy"><h3>{s.decision ? `Agent chose: ${decisionLabels[s.decision.action]}` : actionLabels[s.phase] ?? 'Ready to analyze'}</h3><p>{s.decision ? `Reason: ${s.decision.reason.split(/(?<=[.!?])\s+/)[0]}` : 'Use the confirmed criteria to inspect the review evidence.'}</p></div><div className="agent-actions"><span className="small">Decision {Math.min(s.iterations, 5)} of 5</span>{finished && <div className="workspace-finish"><p>{s.phase === 'stopped' ? 'Analysis stopped. Important questions remain unanswered.' : 'Your decision brief is ready, with the caveats preserved.'}</p><button className="primary" onClick={() => setScreen('brief')}>Read decision brief</button></div>}</div></section><section className="evidence-surface">
-          {s.phase === 'waiting' && <div className="evidence-request"><h2>Can you add relevant evidence?</h2><p>{s.decision?.reason}</p><label className="field-label" htmlFor="additional">Additional reviews</label><textarea id="additional" rows={4} value={additional} onChange={e => setAdditional(e.target.value)} placeholder="Paste relevant reviews, separated by a blank line."/><div className="button-row"><button className="primary" disabled={busy || !additional.trim()} onClick={() => void command('add', { text: additional })}>Add & reanalyze</button><button className="secondary" disabled={busy} onClick={() => void command('skip')}>Skip & keep unknown</button></div>{s.mode === 'demo' && <button className="text-button" onClick={() => setAdditional(subwayReviews.join('\n\n'))}>Load synthetic subway reviews</button>}</div>}
+          {s.phase === 'waiting' && <div className="evidence-request"><h2>Can you add relevant evidence?</h2><p>{s.decision?.reason}</p><label className="field-label" htmlFor="additional">Additional reviews</label>{evidenceGhost && <p id="guided-review-note" className="small guided-note">{language === 'zh' ? '灰色内容是预置合成评论，并非真实买家评价；点击“添加并重新分析”后才会用于分析。' : 'Gray text shows prepared synthetic reviews, not real customer reviews. They are used only if you choose Add & reanalyze.'}</p>}<textarea id="additional" rows={evidenceGhost ? 7 : 4} value={additional} onFocus={() => markTouched('additional')} onChange={e => { markTouched('additional'); setAdditional(e.target.value); }} placeholder={evidenceGhost ?? (touched.additional ? '' : 'Paste relevant reviews, separated by a blank line.')} aria-describedby={evidenceGhost ? 'guided-review-note' : undefined}/><div className="button-row"><button className="primary" disabled={busy || (!additional.trim() && !evidenceGhost)} onClick={() => { const text = additional.trim() || evidenceGhost; if (text) { if (evidenceGhost) setAdditional(text); void command('add', { text }); } }}>Add & reanalyze</button><button className="secondary" disabled={busy} onClick={() => void command('skip')}>Skip & keep unknown</button></div>{s.mode === 'demo' && <button className="text-button" onClick={() => setAdditional(subwayReviews.join('\n\n'))}>Load synthetic subway reviews</button>}</div>}
           
           <div className="section-heading evidence-heading"><h2>Relevant review evidence</h2><span className="small">{s.evidence.length} cited items</span></div>{s.criteria.map(c => { const items = s.evidence.filter(e => e.criterionId === c.id); const assessment = s.assessments.find(a => a.criterionId === c.id); return <section className="criterion-findings" key={c.id}><div className="criterion-finding-heading"><div><h2>{c.label}</h2><p><span className="criterion-priority">{c.priority}</span> · {c.context}{c.minutes !== null ? ` · ${c.minutes} min` : ''}</p></div><span className={`pill ${assessment?.coverage === 'adequate' ? 'positive' : assessment ? 'caution' : 'neutral'}`}>{assessment?.coverage === 'adequate' ? 'Relevant evidence found' : assessment?.coverage === 'mixed' ? 'Conflicting evidence' : assessment ? 'Evidence missing' : 'Awaiting analysis'}</span></div><div className="evidence-counts"><span><strong>{items.filter(e => e.polarity === 'support').length}</strong>Supporting</span><span><strong>{items.filter(e => e.polarity === 'challenge').length}</strong>Challenging</span><span className="small">Cited items</span></div><div className="finding-columns"><div><h3 className="finding-label support-label">Supporting evidence</h3>{evidenceList(items.filter(e => e.polarity === 'support'))}</div><div><h3 className="finding-label challenge-label">Challenging evidence</h3>{evidenceList(items.filter(e => e.polarity === 'challenge'), 'No challenging evidence extracted from these reviews. This does not establish that there are no risks.')}</div></div>{assessment && <p className="assessment-note">{assessment.units} distinct relevant accounts · {assessment.reason}</p>}</section>; })}
           {s.conflicts.length > 0 && <section className="findings"><h2>Conflicts</h2>{s.conflicts.map(c => <div className="finding" key={c.id}><strong>{s.criteria.find(x => x.id === c.criterionId)?.label}</strong><span className={`pill ${c.status === 'explained' ? 'neutral' : 'caution'}`}>{c.status === 'explained' ? 'Context difference found' : c.status}</span><p>{c.finding || 'Positive and negative experiences disagree. The agent will decide whether to investigate.'}</p><div className="button-row">{c.findingEvidenceIds.map(id => { const e = s.evidence.find(e => e.id === id); return e ? <span key={id}>{cite(e)}</span> : null; })}</div></div>)}</section>}

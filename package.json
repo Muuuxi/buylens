@@ -11,7 +11,7 @@
     "evaluate": "tsx scripts/evaluate.ts",
     "live:check": "node scripts/check-live-setup.mjs",
     "test:live": "npm run live:check && playwright test tests/e2e/live.spec.ts",
-    "test:e2e": "playwright test tests/e2e/flows.spec.ts tests/e2e/language.spec.ts",
+    "test:e2e": "playwright test tests/e2e/flows.spec.ts tests/e2e/language.spec.ts tests/e2e/guided.spec.ts",
     "test:live:generic": "npm run live:check && playwright test tests/e2e/generic-live.spec.ts",
     "test:release-live": "playwright test tests/e2e/release-live.spec.ts"
   },

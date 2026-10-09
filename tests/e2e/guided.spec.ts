@@ -41,6 +41,21 @@ function waiting(need: string, product = 'Carry-on suitcase') {
   return session;
 }
 
+test('Interpret waits for live configuration before an immediate click can start', async ({ page }) => {
+  let finishConfig = () => {};
+  let configRequested = false;
+  await page.route('**/api/config', route => new Promise<void>(resolve => {
+    configRequested = true;
+    finishConfig = () => { void route.fulfill({ json: { live: true, persistence: true } }).then(resolve); };
+  }));
+  await page.goto('/');
+  const interpret = page.getByRole('button', { name: 'Interpret my needs' });
+  await expect.poll(() => configRequested).toBe(true);
+  await expect(interpret).toBeDisabled();
+  finishConfig();
+  await expect(interpret).toBeEnabled();
+});
+
 test('untouched English need is visual only until Interpret starts the live task', async ({ page }) => {
   const sent = await mockLive(page);
   await page.goto('/');
